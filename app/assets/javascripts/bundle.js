@@ -60,215 +60,11 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_player__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__lib_platform__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__lib_exit__ = __webpack_require__(3);
-
-
-
-
-document.addEventListener("DOMContentLoaded", () =>{
-  const canvas = document.getElementById("canvas")
-  const ctx = canvas.getContext("2d")
-  ctx.height = 1000;
-  const background = new Image();
-  background.src = "/home/sean/Desktop/hawk_and_minnow/app/assets/images/bg.png";
-  background.onload = () => {
-    var ptrn = ctx.createPattern(background, 'repeat-x');
-    ctx.fillStyle = ptrn;
-  }
-  const player = new __WEBPACK_IMPORTED_MODULE_0__lib_player__["a" /* default */](50, -500);
-  const platformArray = [];
-  const platform = new __WEBPACK_IMPORTED_MODULE_1__lib_platform__["a" /* default */](0, 300, 900, 300);
-  const platform2 = new __WEBPACK_IMPORTED_MODULE_1__lib_platform__["a" /* default */](150, 260, 150, 400);
-  const platform3 = new __WEBPACK_IMPORTED_MODULE_1__lib_platform__["a" /* default */](450, 260, 150, 600);
-  const platform4 = new __WEBPACK_IMPORTED_MODULE_1__lib_platform__["a" /* default */](600, 220, 150, 500);
-  const platform5 = new __WEBPACK_IMPORTED_MODULE_1__lib_platform__["a" /* default */](750, 180, 150, 500);
-  const exit = new __WEBPACK_IMPORTED_MODULE_2__lib_exit__["a" /* default */](815, 150);
-  platformArray.push(platform);
-  platformArray.push(platform2);
-  platformArray.push(platform3);
-  platformArray.push(platform4);
-  platformArray.push(platform5);
-
-  const clamp = (value, min, max) => {
-    if(value < min) return min;
-    else if(value > max) return max;
-    return value;
-  }
-  let vx = 0;
-
-  var motionTrailLength = 10;
-  var positions = [];
-
-  function storeLastPosition(xPos, yPos) {
-    // push an item
-    positions.push({
-      xPos,
-      yPos
-    });
-
-    //get rid of first item
-    if (positions.length > motionTrailLength) {
-      positions.shift();
-    }
-  }
-
-  const renderLevel = () => {
-    ctx.setTransform(1,0,0,1,0,0);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    ctx.drawImage(background,vx,0);
-    ctx.drawImage(background, background.width-Math.abs(vx), 0);
-    if (Math.abs(vx) > background.width) {
-      vx = 0;
-    }
-    vx -= 0.1;
-    var camX = clamp(-player.xPos + canvas.width/2, 0, 2000 - canvas.width);
-    var camY = clamp(-player.yPos + canvas.height/2, 0, 2000 - canvas.height);
-
-    ctx.translate( camX, camY );
-
-    ctx.fillStyle = "rgba(96, 252, 255, .98)";
-    ctx.fillRect(platform.xPos, platform.yPos, platform.width, platform.height)
-    ctx.fillRect(platform2.xPos, platform2.yPos, platform2.width, platform2.height)
-    ctx.fillRect(platform3.xPos, platform3.yPos, platform3.width, platform3.height)
-    ctx.fillRect(platform4.xPos, platform4.yPos, platform4.width, platform4.height)
-    ctx.fillRect(platform5.xPos, platform5.yPos, platform5.width, platform5.height)
-    // for (var i = 0; i < positions.length; i++) {
-    //   var ratio = (i + 1) / positions.length;
-    //   const trailColor = `${player.trailColor}, ${ratio / 2})`;
-    //   console.log(trailColor);
-    //   ctx.fillStyle = trailColor;
-    //   ctx.fillRect(positions[i].xPos-5, positions[i].yPos-5, 20, 20);
-    // }
-    ctx.fillStyle = player.color;
-    ctx.fillRect(player.xPos, player.yPos, player.width, player.height);
-    ctx.fillStyle = `#${exit.color}`;
-    ctx.fillRect(exit.xPos, exit.yPos, exit.width, exit.height);
-    ctx.strokeStyle = `#${exit.borderColor}`;
-    ctx.lineWidth=5;
-    ctx.strokeRect(exit.xPos, exit.yPos, exit.width, exit.height);
-  }
-
-  window.requestAnimFrame = (function(callback) {
-    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
-    function(callback) {
-      window.setTimeout(callback, 1000/60);
-    };
-  })();
-
-  const yCollisionCheck = () => {
-    platformArray.some((platform) => {
-      if (player.xPos+player.width > platform.xPos && player.xPos < platform.xPos + platform.width){
-        if (player.yPos <= platform.yPos + platform.height && player.yPos > platform.yPos + (platform.height/2)) {
-          player.yPos = platform.yPos + platform.height;
-          player.ySpeed = 1;
-          return true;
-        }
-        if (player.yPos+player.height >= platform.yPos) {
-          if(player.yPos > platform.yPos+platform.height) {
-            player.isStopped = false;
-            return false;
-          } else {
-            player.isStopped = true;
-            player.yPos = platform.yPos - player.height;
-            player.ySpeed = 0;
-            return true;
-          }
-        }
-      } else {
-        player.isStopped = false;
-        return false;
-      }
-    })
-  }
-
-  const xCollisionCheck = () => {
-    platformArray.some((platform) => {
-      if (player.yPos+player.height > platform.yPos && player.yPos < platform.yPos + platform.height){
-        if(player.xPos + player.width + 2 >= platform.xPos && player.xPos < platform.xPos + platform.width){
-          player.rightBlocked = true;
-        }
-        if(player.xPos <= platform.xPos + platform.width + 3 && player.xPos + player.width > platform.xPos){
-          player.leftBlocked = true;
-        }
-      }
-    })
-  }
-
-  const divingCollisionCheck = () => {
-    platformArray.some((platform) => {
-      if (player.xPos + player.width >= platform.xPos && player.xPos <= platform.xPos + platform.width ) {
-        if (player.yPos+player.height >= platform.yPos && player.yPos < platform.yPos + platform.height) {
-          player.inWater = true;
-          return true;
-        }
-        player.inWater = false;
-      }
-
-    })
-  }
-
-  const breachingCollisionCheck = () => {
-    platformArray.some((platform) => {
-      if (player.xPos + player.width >= platform.xPos && player.xPos <= platform.xPos + platform.width ) {
-        if (player.yPos+player.height >= platform.yPos && player.yPos < platform.yPos + platform.height) {
-          player.inWater = true;
-          return true;
-        }
-        player.inWater = false;
-      }
-
-    })
-  }
-
-  const update = () => {
-    storeLastPosition(player.xPos, player.yPos);
-    if (player.inWater){
-      player.update();
-      breachingCollisionCheck();
-    } else {
-      if(!player.isDiving){
-        xCollisionCheck();
-      }
-      player.update();
-      exit.update();
-      if (!player.isDiving) {
-        yCollisionCheck();
-      } else {
-        divingCollisionCheck();
-      }
-    }
-    checkBounds();
-    renderLevel();
-    requestAnimFrame(() => {
-      update();
-    })
-  }
-
-  const checkBounds = () => {
-    if (player.yPos > 1200) {
-      player.xPos = 50;
-      player.yPos = 200;
-      player.ySpeed = 0;
-    }
-  }
-  update();
-})
-
-
-/***/ }),
-/* 1 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -388,7 +184,7 @@ class Player {
 
 
 /***/ }),
-/* 2 */
+/* 1 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -407,7 +203,7 @@ class Platform {
 
 
 /***/ }),
-/* 3 */
+/* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -446,6 +242,70 @@ class Exit {
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (Exit);
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_game__ = __webpack_require__(7);
+
+
+const thanksWill = new Audio('/home/sean/Desktop/hawk_and_minnow/app/assets/sounds/seansong.mp3');
+thanksWill.volume = .5;
+if (typeof thanksWill.loop == 'boolean')
+{
+    thanksWill.loop = true;
+}
+else
+{
+    thanksWill.addEventListener('ended', function() {
+        this.currentTime = 0;
+        this.play();
+    }, false);
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById('mute').addEventListener('click', (e) => {
+      if ( thanksWill.muted ) {
+        __WEBPACK_IMPORTED_MODULE_0__lib_game__["d" /* splashAudio */].muted = false;
+        __WEBPACK_IMPORTED_MODULE_0__lib_game__["b" /* deathAudio */].muted = false;
+        __WEBPACK_IMPORTED_MODULE_0__lib_game__["a" /* completeAudio */].muted = false;
+        thanksWill.muted = false;
+        e.target.innerHTML = 'mute'
+      }
+      else {
+        __WEBPACK_IMPORTED_MODULE_0__lib_game__["d" /* splashAudio */].muted = true;
+        __WEBPACK_IMPORTED_MODULE_0__lib_game__["b" /* deathAudio */].muted = true;
+        __WEBPACK_IMPORTED_MODULE_0__lib_game__["a" /* completeAudio */].muted = true;
+        thanksWill.muted = true;
+        e.target.innerHTML = 'unmute'
+      }
+  })
+
+  const startGame = document.getElementById('start')
+  startGame.addEventListener('click', (e) => {
+    __WEBPACK_IMPORTED_MODULE_0__lib_game__["c" /* game */]();
+    thanksWill.play();
+    startGame.style.display = 'none';
+    fade(document.getElementById('title'));
+  })
+})
+
+const fade = (el) => {
+    const timer = setInterval(() => {
+        if (op <= 0.1){
+            clearInterval(timer);
+            el.style.display = 'none';
+        }
+        el.style.opacity = op;
+        el.style.filter = 'alpha(opacity=' + op * 100 + ")";
+        op -= op * 0.1;
+    }, 50);
+}
 
 
 /***/ }),
@@ -760,6 +620,356 @@ function ColourGradient()
 if (true) {
   module.exports = Rainbow;
 }
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__levels__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__player__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__platform__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__exit__ = __webpack_require__(2);
+
+
+
+
+
+const levelOne = new __WEBPACK_IMPORTED_MODULE_0__levels__["a" /* default */](
+  new __WEBPACK_IMPORTED_MODULE_1__player__["a" /* default */](50, -500), [
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](0, 300, 900, 200),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](150, 270, 750, 200),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](300, 230, 600, 200),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](450, 190, 450, 200),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](600, 160, 300, 200)
+  ],
+  [
+    [450, 190, 340, 100, true],
+    [600, 160, 300, 100, true],
+    [300, 230, 280, 80, true],
+    [150, 270, 150, 60, true],
+    [0, 300, 150, 50, true],
+  ],
+  new __WEBPACK_IMPORTED_MODULE_3__exit__["a" /* default */](815, 130)
+)
+/* harmony export (immutable) */ __webpack_exports__["a"] = levelOne;
+
+
+const levelTwo = new __WEBPACK_IMPORTED_MODULE_0__levels__["a" /* default */](
+  new __WEBPACK_IMPORTED_MODULE_1__player__["a" /* default */](50,  0), [
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](0, 300, 900, 200),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](150, 270, 750, 200),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](450, 190, 450, 200),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](600, 160, 300, 200),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](1000, 160, 300, 200)
+  ],
+  [
+    [0, 300, 900, 200, true],
+    [150, 270, 750, 200, true],
+    [450, 190, 450, 200, true],
+    [600, 160, 300, 200, true],
+    [1000, 160, 300, 200]
+  ],
+  new __WEBPACK_IMPORTED_MODULE_3__exit__["a" /* default */](815, 130)
+)
+/* harmony export (immutable) */ __webpack_exports__["c"] = levelTwo;
+
+
+const levelThree = new __WEBPACK_IMPORTED_MODULE_0__levels__["a" /* default */](
+  new __WEBPACK_IMPORTED_MODULE_1__player__["a" /* default */](50, 0), [
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](0, 300, 900, 200),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](150, 270, 750, 200),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](300, 230, 600, 200),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](450, 190, 450, 200),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](600, 160, 300, 200)
+  ],
+  [
+    [0, 300, 900, 200, true],
+    [150, 270, 750, 200, true],
+    [300, 230, 600, 200, true],
+    [450, 190, 450, 200, true],
+    [600, 160, 300, 200, true]
+  ],
+  new __WEBPACK_IMPORTED_MODULE_3__exit__["a" /* default */](815, 130)
+)
+/* harmony export (immutable) */ __webpack_exports__["b"] = levelThree;
+
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+class Level {
+  constructor(player, platformArray, renderArray, exit) {
+    this.player = player;
+    this.platformArray = platformArray;
+    this.renderArray = renderArray;
+    this.exit = exit;
+  }
+}
+
+/* harmony default export */ __webpack_exports__["a"] = (Level);
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__player__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__platform__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__exit__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__levelCreateUtil__ = __webpack_require__(5);
+
+
+
+
+
+function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+  if (typeof stroke == 'undefined') {
+    stroke = true;
+  }
+  if (typeof radius === 'undefined') {
+    radius = 5;
+  }
+  if (typeof radius === 'number') {
+    radius = {tl: radius, tr: radius, br: radius, bl: radius};
+  } else {
+    var defaultRadius = {tl: 0, tr: 0, br: 0, bl: 0};
+    for (var side in defaultRadius) {
+      radius[side] = radius[side] || defaultRadius[side];
+    }
+  }
+
+  ctx.beginPath();
+  ctx.moveTo(x + radius.tl, y);
+  ctx.lineTo(x + width - radius.tr, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+  ctx.lineTo(x + width, y + height - radius.br);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+  ctx.lineTo(x + radius.bl, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+  ctx.lineTo(x, y + radius.tl);
+  ctx.quadraticCurveTo(x, y, x + radius.tl, y);
+  ctx.closePath();
+  if (fill) {
+    ctx.fill();
+  }
+  if (stroke) {
+    ctx.stroke();
+  }
+
+}
+
+const splashAudio = new Audio('/home/sean/Desktop/hawk_and_minnow/app/assets/sounds/splash2.wav');
+/* harmony export (immutable) */ __webpack_exports__["d"] = splashAudio;
+
+splashAudio.volume = 0.15;
+const deathAudio = new Audio('/home/sean/Desktop/hawk_and_minnow/app/assets/sounds/deathsound.wav');
+/* harmony export (immutable) */ __webpack_exports__["b"] = deathAudio;
+
+deathAudio.volume = 0.4;
+const completeAudio = new Audio('/home/sean/Desktop/hawk_and_minnow/app/assets/sounds/levelcomplete2.wav');
+/* harmony export (immutable) */ __webpack_exports__["a"] = completeAudio;
+
+completeAudio.volume = .4;
+
+const game = () => {
+  const canvas = document.getElementById("canvas")
+  const ctx = canvas.getContext("2d")
+  ctx.height = 1000;
+  const background = new Image();
+  background.src = "/home/sean/Desktop/hawk_and_minnow/app/assets/images/clouds.jpg";
+  background.onload = () => {
+    var ptrn = ctx.createPattern(background, 'repeat-x');
+    ctx.fillStyle = ptrn;
+  }
+  const clamp = (value, min, max) => {
+    if(value < min) return min;
+    else if(value > max) return max;
+    return value;
+  }
+  let vx = 0;
+
+  var motionTrailLength = 10;
+  var positions = [];
+
+  const storeLastPosition = (xPos, yPos) => {
+    positions.push({
+      xPos,
+      yPos
+    });
+
+    if (positions.length > motionTrailLength) {
+      positions.shift();
+    }
+  }
+  const platformColor = 'rgb(19, 44, 86)'
+
+  const levels = [__WEBPACK_IMPORTED_MODULE_3__levelCreateUtil__["a" /* levelOne */], __WEBPACK_IMPORTED_MODULE_3__levelCreateUtil__["c" /* levelTwo */], __WEBPACK_IMPORTED_MODULE_3__levelCreateUtil__["b" /* levelThree */]]
+  let levelCounter = 0;
+  let level = levels[levelCounter];
+  let player = level.player;
+  let exit = level.exit;
+  let platformArray = level.platformArray;
+  let renderArray = level.renderArray;
+
+  const renderLevel = () => {
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.drawImage(background,vx,0);
+    ctx.drawImage(background, background.width-Math.abs(vx), 0);
+    if (Math.abs(vx) > background.width) {
+      vx = 0;
+    }
+    vx -= 0.1;
+    var camX = clamp(-player.xPos + canvas.width/2, 0, 2000 - canvas.width);
+    var camY = clamp(-player.yPos + canvas.height/2, 0, 2000 - canvas.height);
+
+    ctx.translate( camX, camY );
+
+    ctx.fillStyle = "rgba(0, 75, 150, 1)";
+    ctx.lineWidth = 2;
+    renderArray.forEach((platform) => {
+      roundRect(ctx, platform[0], platform[1], platform[2], platform[3], 10, platformColor, platform[4])
+    })
+    ctx.fillStyle = player.color;
+    ctx.fillRect(player.xPos, player.yPos, player.width, player.height);
+    ctx.fillStyle = `#${exit.color}`;
+    ctx.fillRect(exit.xPos, exit.yPos, exit.width, exit.height);
+    ctx.strokeStyle = `#${exit.borderColor}`;
+    ctx.lineWidth=5;
+    ctx.strokeRect(exit.xPos, exit.yPos, exit.width, exit.height);
+  }
+
+  window.requestAnimFrame = (function(callback) {
+    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+    function(callback) {
+      window.setTimeout(callback, 1000/60);
+    };
+  })();
+
+  const yCollisionCheck = () => {
+    platformArray.some((platform) => {
+      if (player.xPos+player.width > platform.xPos && player.xPos < platform.xPos + platform.width){
+        if (player.yPos <= platform.yPos + platform.height && player.yPos > platform.yPos + (platform.height/2)) {
+          player.yPos = platform.yPos + platform.height;
+          player.ySpeed = 1;
+          return true;
+        }
+        if (player.yPos+player.height >= platform.yPos) {
+          if(player.yPos > platform.yPos+platform.height) {
+            player.isStopped = false;
+            return false;
+          } else {
+            player.isStopped = true;
+            player.yPos = platform.yPos - player.height;
+            player.ySpeed = 0;
+            return true;
+          }
+        }
+      } else {
+        player.isStopped = false;
+        return false;
+      }
+    })
+  }
+
+  const xCollisionCheck = () => {
+    platformArray.some((platform) => {
+      if (player.yPos+player.height > platform.yPos && player.yPos < platform.yPos + platform.height){
+        if(player.xPos + player.width + 3 >= platform.xPos && player.xPos < platform.xPos + platform.width){
+          player.rightBlocked = true;
+        }
+        if(player.xPos <= platform.xPos + platform.width + 3 && player.xPos + player.width > platform.xPos){
+          player.leftBlocked = true;
+        }
+      }
+    })
+  }
+
+  const divingCollisionCheck = () => {
+    platformArray.some((platform) => {
+      if (player.xPos + player.width >= platform.xPos && player.xPos <= platform.xPos + platform.width ) {
+        if (player.yPos+player.height >= platform.yPos && player.yPos < platform.yPos + platform.height) {
+          splashAudio.play();
+          player.inWater = true;
+          return true;
+        }
+        player.inWater = false;
+      }
+
+    })
+  }
+
+  const breachingCollisionCheck = () => {
+    platformArray.some((platform) => {
+      if (player.xPos + player.width >= platform.xPos && player.xPos <= platform.xPos + platform.width ) {
+        if (player.yPos + player.height >= platform.yPos && player.yPos < platform.yPos + platform.height) {
+          player.inWater = true;
+          return true;
+        }
+      }
+      player.inWater = false;
+    })
+  }
+
+  const checkFinishLevel = () => {
+    if (player.xPos + player.width > exit.xPos && player.xPos <= exit.xPos + exit.width ) {
+      if (player.yPos + player.height >= exit.yPos && player.yPos < exit.yPos + exit.height) {
+        completeAudio.play();
+        level = levels[levelCounter += 1]
+        player = level.player;
+        exit = level.exit;
+        platformArray = level.platformArray;
+        renderArray = level.renderArray;
+        player.xSpeed = 0;
+        player.ySpeed = 0;
+      }
+    }
+  }
+
+  const update = () => {
+    storeLastPosition(player.xPos, player.yPos);
+    if (player.inWater){
+      player.update();
+      breachingCollisionCheck();
+    } else {
+      if(!player.isDiving){
+        xCollisionCheck();
+      }
+      player.update();
+      exit.update();
+      if (!player.isDiving) {
+        yCollisionCheck();
+      } else {
+        divingCollisionCheck();
+      }
+    }
+    checkBounds();
+    checkFinishLevel();
+    renderLevel();
+    requestAnimFrame(() => {
+      update();
+    })
+  }
+
+  const checkBounds = () => {
+    if (player.yPos > 1200) {
+      deathAudio.play();
+      player.xPos = 50;
+      player.yPos = 200;
+      player.ySpeed = 0;
+    }
+  }
+  update();
+}
+/* harmony export (immutable) */ __webpack_exports__["c"] = game;
+
 
 
 /***/ })
