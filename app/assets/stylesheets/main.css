@@ -1,0 +1,20 @@
+#title {
+  position: absolute;
+  left: 375px;
+  top: 200px;
+  opacity: 0;
+}
+
+#start {
+  position: absolute;
+  left: 500px;
+  top: 300px;
+  z-index: 1;
+}
+body {
+  display: flex;
+}
+
+/*#canvas {
+  margin: 0 auto;
+}*/

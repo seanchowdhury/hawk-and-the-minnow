@@ -267,8 +267,15 @@ else
     }, false);
 }
 
+const background = new Image();
+background.src = "/home/sean/Desktop/hawk_and_minnow/app/assets/images/clouds.jpg";
 
 document.addEventListener("DOMContentLoaded", () => {
+  const canvas = document.getElementById("canvas")
+  const ctx = canvas.getContext("2d")
+  background.onload = () => { ctx.drawImage(background, 0, 0) };
+
+
     document.getElementById('mute').addEventListener('click', (e) => {
       if ( thanksWill.muted ) {
         __WEBPACK_IMPORTED_MODULE_0__lib_game__["d" /* splashAudio */].muted = false;
@@ -291,19 +298,25 @@ document.addEventListener("DOMContentLoaded", () => {
     __WEBPACK_IMPORTED_MODULE_0__lib_game__["c" /* game */]();
     thanksWill.play();
     startGame.style.display = 'none';
-    fade(document.getElementById('title'));
+    const titleCard = document.getElementById('title');
+    titleCard.style.opacity = '1';
+    fade(titleCard);
   })
 })
 
 const fade = (el) => {
+    let op = 1;
+    let fader = 0.005;
     const timer = setInterval(() => {
         if (op <= 0.1){
             clearInterval(timer);
             el.style.display = 'none';
+        } else if (op <= 0.6) {
+          fader = 0.1;
         }
         el.style.opacity = op;
         el.style.filter = 'alpha(opacity=' + op * 100 + ")";
-        op -= op * 0.1;
+        op -= op * fader;
     }, 50);
 }
 
@@ -637,7 +650,7 @@ if (true) {
 
 
 const levelOne = new __WEBPACK_IMPORTED_MODULE_0__levels__["a" /* default */](
-  new __WEBPACK_IMPORTED_MODULE_1__player__["a" /* default */](50, -500), [
+  new __WEBPACK_IMPORTED_MODULE_1__player__["a" /* default */](50, -5000), [
     new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](0, 300, 900, 200),
     new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](150, 270, 750, 200),
     new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](300, 230, 600, 200),
@@ -780,7 +793,6 @@ completeAudio.volume = .4;
 const game = () => {
   const canvas = document.getElementById("canvas")
   const ctx = canvas.getContext("2d")
-  ctx.height = 1000;
   const background = new Image();
   background.src = "/home/sean/Desktop/hawk_and_minnow/app/assets/images/clouds.jpg";
   background.onload = () => {

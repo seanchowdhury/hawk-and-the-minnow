@@ -14,8 +14,15 @@ else
     }, false);
 }
 
+const background = new Image();
+background.src = "/home/sean/Desktop/hawk_and_minnow/app/assets/images/clouds.jpg";
 
 document.addEventListener("DOMContentLoaded", () => {
+  const canvas = document.getElementById("canvas")
+  const ctx = canvas.getContext("2d")
+  background.onload = () => { ctx.drawImage(background, 0, 0) };
+
+
     document.getElementById('mute').addEventListener('click', (e) => {
       if ( thanksWill.muted ) {
         splashAudio.muted = false;
@@ -38,18 +45,24 @@ document.addEventListener("DOMContentLoaded", () => {
     game();
     thanksWill.play();
     startGame.style.display = 'none';
-    fade(document.getElementById('title'));
+    const titleCard = document.getElementById('title');
+    titleCard.style.opacity = '1';
+    fade(titleCard);
   })
 })
 
 const fade = (el) => {
+    let op = 1;
+    let fader = 0.005;
     const timer = setInterval(() => {
         if (op <= 0.1){
             clearInterval(timer);
             el.style.display = 'none';
+        } else if (op <= 0.6) {
+          fader = 0.1;
         }
         el.style.opacity = op;
         el.style.filter = 'alpha(opacity=' + op * 100 + ")";
-        op -= op * 0.1;
+        op -= op * fader;
     }, 50);
 }
