@@ -114,11 +114,25 @@ class Player {
   // PRIVATE
 
   _move() {
-    this.xSpeed = 0
+    if (this.rightBlocked || this.leftBlocked) {
+      this.xSpeed = 0;
+    } else {
+      this.xSpeed = this.xSpeed * 0.9;
+    }
+
     if(this.rightPressed && !this.rightBlocked) {
-      this.xSpeed = this.moveSpeed;
+      if (this.xSpeed > 0) {
+        this.xSpeed = this.moveSpeed;
+      } else {
+        this.xSpeed += this.moveSpeed;
+      }
     } else if(this.leftPressed && !this.leftBlocked) {
-      this.xSpeed =- this.moveSpeed;
+      if (this.xSpeed < 0) {
+        this.xSpeed = this.moveSpeed * -1;
+      } else {
+        this.xSpeed -= this.moveSpeed;
+      }
+
     }
     this.rightBlocked = false;
     this.leftBlocked = false;
@@ -535,9 +549,11 @@ const game = () => {
     platformArray.some((platform) => {
       if (player.yPos+player.height > platform.yPos && player.yPos < platform.yPos + platform.height){
         if(player.xPos + player.width + 3 >= platform.xPos && player.xPos < platform.xPos + platform.width){
+          player.xPos = platform.xPos - player.width;
           player.rightBlocked = true;
         }
         if(player.xPos <= platform.xPos + platform.width + 3 && player.xPos + player.width > platform.xPos){
+          player.xPos = platform.xPos + platform.width;
           player.leftBlocked = true;
         }
       }
@@ -1064,7 +1080,7 @@ const levelSix = new __WEBPACK_IMPORTED_MODULE_0__levels__["a" /* default */] (
     new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](600, 460, 100, 100),
     new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](-100, -100, 500, 400),
     new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](400, 175, 175, 275),
-    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](-50, 465, 275, 15),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](-50, 465, 375, 15),
     new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](-275, 175, 175, 275)
   ],
   [
