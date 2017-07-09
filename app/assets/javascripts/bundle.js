@@ -532,7 +532,7 @@ const game = () => {
   const xCollisionCheck = () => {
     platformArray.some((platform) => {
       if (player.yPos+player.height > platform.yPos && player.yPos < platform.yPos + platform.height){
-        if(player.xPos + player.width >= platform.xPos && player.xPos < platform.xPos + platform.width){
+        if(player.xPos + player.width >= platform.xPos && player.xPos < platform.xPos + (platform.width / 2) ) {
           player.xPos = platform.xPos - player.width - 1;
           player.rightBlocked = true;
         }
@@ -958,7 +958,7 @@ if (true) {
 
 
 const levelOne = new __WEBPACK_IMPORTED_MODULE_0__levels__["a" /* default */](
-  new __WEBPACK_IMPORTED_MODULE_1__player__["a" /* default */](50, -5000), [
+  new __WEBPACK_IMPORTED_MODULE_1__player__["a" /* default */](50, -3500), [
     new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](0, 300, 900, 200),
     new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](150, 270, 750, 200),
     new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](300, 230, 600, 200),
