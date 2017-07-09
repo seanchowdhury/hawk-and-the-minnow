@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const fade = (el) => {
     let op = 1;
-    let fader = 0.005;
+    let fader = 0.006;
     const timer = setInterval(() => {
         if (op <= 0.1){
             clearInterval(timer);

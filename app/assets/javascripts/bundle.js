@@ -311,7 +311,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const fade = (el) => {
     let op = 1;
-    let fader = 0.005;
+    let fader = 0.006;
     const timer = setInterval(() => {
         if (op <= 0.1){
             clearInterval(timer);
@@ -426,17 +426,18 @@ const game = () => {
   }
   const platformColor = 'rgb(19, 44, 86)'
 
-  let levelCounter = 0;
+  let levelCounter = 1;
   let level = __WEBPACK_IMPORTED_MODULE_3__levelCreateUtil__["a" /* levels */][levelCounter];
   let player = level.player;
   let exit = level.exit;
   let platformArray = level.platformArray;
   let renderArray = level.renderArray;
+  let showHelp = false;
 
   const renderLevel = () => {
     ctx.setTransform(1,0,0,1,0,0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+    console.log(showHelp)
     ctx.drawImage(background,vx,0);
     ctx.drawImage(background, background.width-Math.abs(vx), 0);
     if (Math.abs(vx) > background.width) {
@@ -455,10 +456,18 @@ const game = () => {
       ctx.fillText("Press the up arrow key to jump", 170, 100);
     }
     if (levelCounter === 1) {
-      ctx.fillText("You're going to need help from your friend for this one.", -400, 100)
-      ctx.fillText("Try holding the 'Z' key while jumping.", 350, 400)
+      ctx.fillText("You can leap over the highest obstacles! I believe in you!", -400, 100)
+      if (player.yPos === 204) {
+        window.setTimeout( () => {
+          showHelp = true;
+        }, 3000)
+      }
+      if (showHelp === true) {
+        ctx.fillText("Sorry you were tricked", 325, 375)
+        ctx.fillText("Try holding the 'Z' key while in air/jumping,", 325, 400)
+        ctx.fillText("and dive into the water!", 325, 425)
+      }
     }
-
     ctx.fillStyle = "rgba(0, 75, 150, 1)";
     ctx.lineWidth = 2;
     if (player.inWater) {
@@ -560,6 +569,7 @@ const game = () => {
         renderArray = level.renderArray;
         player.xSpeed = 0;
         player.ySpeed = 0;
+        showHelp = false;
       }
     }
   }
