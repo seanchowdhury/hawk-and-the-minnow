@@ -437,7 +437,7 @@ const game = () => {
 
   const platformColor = 'rgb(19, 44, 86)'
 
-  let levelCounter = 1;
+  let levelCounter = 0;
   let level = __WEBPACK_IMPORTED_MODULE_3__levelCreateUtil__["a" /* levels */][levelCounter];
   let player = level.player;
   let exit = level.exit;
@@ -532,12 +532,12 @@ const game = () => {
   const xCollisionCheck = () => {
     platformArray.some((platform) => {
       if (player.yPos+player.height > platform.yPos && player.yPos < platform.yPos + platform.height){
-        if(player.xPos + player.width + 3 >= platform.xPos && player.xPos < platform.xPos + platform.width){
-          player.xPos = platform.xPos - player.width;
+        if(player.xPos + player.width >= platform.xPos && player.xPos < platform.xPos + platform.width){
+          player.xPos = platform.xPos - player.width - 1;
           player.rightBlocked = true;
         }
-        if(player.xPos <= platform.xPos + platform.width + 3 && player.xPos + player.width > platform.xPos){
-          player.xPos = platform.xPos + platform.width;
+        if(player.xPos <= platform.xPos + platform.width && player.xPos + player.width > platform.xPos){
+          player.xPos = platform.xPos + platform.width + 1;
           player.leftBlocked = true;
         }
       }
