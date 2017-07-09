@@ -84,7 +84,8 @@ class Player {
     this.inWater = false;
     this.color = "rgb(255, 106, 7)";
     this.trailColor = 'rgba(0, 0, 0';
-    this.moveSpeed = 4;
+    this.maxMoveSpeed = 4;
+    this.moveSpeed = 0.9;
     this.xSpeed = 0;
     this.ySpeed = 0;
     this.terminalVelocity = 20;
@@ -98,7 +99,6 @@ class Player {
   }
 
   update() {
-    this._move();
     if (this.inWater) {
       this.color = "rgb(209, 255, 94)";
       this.trailColor = 'rgba(255, 106, 7';
@@ -111,33 +111,30 @@ class Player {
 
 
   }
-  // PRIVATE
 
-  _move() {
-    if (this.rightBlocked || this.leftBlocked) {
+  xMove() {
+    this.xSpeed = this.xSpeed * 0.9;
+
+    if ((this.rightBlocked && this.xSpeed > 0) || (this.leftBlocked && this.xSpeed < 0)) {
       this.xSpeed = 0;
-    } else {
-      this.xSpeed = this.xSpeed * 0.9;
     }
 
-    if(this.rightPressed && !this.rightBlocked) {
-      if (this.xSpeed > 0) {
-        this.xSpeed = this.moveSpeed;
-      } else {
-        this.xSpeed += this.moveSpeed;
-      }
-    } else if(this.leftPressed && !this.leftBlocked) {
-      if (this.xSpeed < 0) {
-        this.xSpeed = this.moveSpeed * -1;
-      } else {
-        this.xSpeed -= this.moveSpeed;
-      }
 
+    if(this.rightPressed && this.xSpeed < this.maxMoveSpeed && !this.rightBlocked) {
+      this.xSpeed += this.moveSpeed
     }
+
+    if(this.leftPressed && this.xSpeed > this.maxMoveSpeed * -1 && !this.leftBlocked) {
+      this.xSpeed -= this.moveSpeed
+    }
+
     this.rightBlocked = false;
     this.leftBlocked = false;
     this.xPos += this.xSpeed
   }
+
+  // PRIVATE
+
 
   _jump() {
     if(this.isStopped) {
@@ -438,22 +435,9 @@ const game = () => {
   }
   let vx = 0;
 
-  var motionTrailLength = 10;
-  var positions = [];
-
-  const storeLastPosition = (xPos, yPos) => {
-    positions.push({
-      xPos,
-      yPos
-    });
-
-    if (positions.length > motionTrailLength) {
-      positions.shift();
-    }
-  }
   const platformColor = 'rgb(19, 44, 86)'
 
-  let levelCounter = 0;
+  let levelCounter = 1;
   let level = __WEBPACK_IMPORTED_MODULE_3__levelCreateUtil__["a" /* levels */][levelCounter];
   let player = level.player;
   let exit = level.exit;
@@ -483,7 +467,7 @@ const game = () => {
     }
     if (levelCounter === 1) {
       ctx.fillText("You can leap over the highest obstacles! I believe in you!", -400, 100)
-      if (player.yPos === 204) {
+      if (player.xPos >= 438) {
         window.setTimeout( () => {
           showHelp = true;
         }, 3000)
@@ -494,7 +478,7 @@ const game = () => {
         ctx.fillText("and dive into the water!", 325, 425)
       }
     }
-    ctx.fillStyle = "rgba(0, 75, 150, 1)";
+    ctx.fillStyle = "rgba(0, 75, 150, .8)";
     ctx.lineWidth = 2;
     if (player.inWater) {
       ctx.strokeStyle = `#${exit.color}`;
@@ -606,7 +590,7 @@ const game = () => {
   }
 
   const update = () => {
-    storeLastPosition(player.xPos, player.yPos);
+    player.xMove();
     if (player.inWater){
       player.update();
       breachingCollisionCheck();
@@ -614,6 +598,7 @@ const game = () => {
       if(!player.isDiving){
         xCollisionCheck();
       }
+
       player.update();
       exit.update();
       if (!player.isDiving) {
