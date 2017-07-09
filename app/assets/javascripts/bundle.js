@@ -207,7 +207,7 @@ class Platform {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-var Rainbow = __webpack_require__(4);
+var Rainbow = __webpack_require__(5);
 var myRainbow = new Rainbow();
 
 class Exit {
@@ -250,10 +250,10 @@ class Exit {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_game__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lib_game__ = __webpack_require__(4);
 
 
-const thanksWill = new Audio('/home/sean/Desktop/hawk_and_minnow/app/assets/sounds/seansong.mp3');
+const thanksWill = new Audio('app/assets/sounds/seansong.mp3');
 thanksWill.volume = .5;
 if (typeof thanksWill.loop == 'boolean')
 {
@@ -268,7 +268,7 @@ else
 }
 
 const background = new Image();
-background.src = "/home/sean/Desktop/hawk_and_minnow/app/assets/images/clouds.jpg";
+background.src = "app/assets/images/clouds1.jpg";
 
 document.addEventListener("DOMContentLoaded", () => {
   const canvas = document.getElementById("canvas")
@@ -282,26 +282,31 @@ document.addEventListener("DOMContentLoaded", () => {
         __WEBPACK_IMPORTED_MODULE_0__lib_game__["b" /* deathAudio */].muted = false;
         __WEBPACK_IMPORTED_MODULE_0__lib_game__["a" /* completeAudio */].muted = false;
         thanksWill.muted = false;
-        e.target.innerHTML = 'mute'
+        e.target.src = "app/assets/images/Icons8-Windows-8-Media-Controls-Volume-Up.ico"
       }
       else {
         __WEBPACK_IMPORTED_MODULE_0__lib_game__["d" /* splashAudio */].muted = true;
         __WEBPACK_IMPORTED_MODULE_0__lib_game__["b" /* deathAudio */].muted = true;
         __WEBPACK_IMPORTED_MODULE_0__lib_game__["a" /* completeAudio */].muted = true;
         thanksWill.muted = true;
-        e.target.innerHTML = 'unmute'
+        e.target.src = "app/assets/images/Icons8-Windows-8-Media-Controls-Mute.ico"
       }
   })
 
-  const startGame = document.getElementById('start')
-  startGame.addEventListener('click', (e) => {
-    __WEBPACK_IMPORTED_MODULE_0__lib_game__["c" /* game */]();
-    thanksWill.play();
-    startGame.style.display = 'none';
-    const titleCard = document.getElementById('title');
-    titleCard.style.opacity = '1';
-    fade(titleCard);
-  })
+
+  const startGame = (e) => {
+    if (e.keyCode === 13) {
+      document.removeEventListener('keydown', startGame);
+      __WEBPACK_IMPORTED_MODULE_0__lib_game__["c" /* game */]();
+      thanksWill.play();
+      document.getElementById('start').style.display = 'none';
+      const titleCard = document.getElementById('title');
+      titleCard.style.opacity = '1';
+      fade(titleCard);
+    }
+  }
+
+  document.addEventListener('keydown', startGame)
 })
 
 const fade = (el) => {
@@ -320,9 +325,286 @@ const fade = (el) => {
     }, 50);
 }
 
+window.addEventListener("keydown", function(e) {
+if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+    e.preventDefault();
+}
+}, false);
+
 
 /***/ }),
 /* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__player__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__platform__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__exit__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__levelCreateUtil__ = __webpack_require__(6);
+
+
+
+
+
+function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+  if (typeof stroke == 'undefined') {
+    stroke = true;
+  }
+  if (typeof radius === 'undefined') {
+    radius = 5;
+  }
+  if (typeof radius === 'number') {
+    radius = {tl: radius, tr: radius, br: radius, bl: radius};
+  } else {
+    var defaultRadius = {tl: 0, tr: 0, br: 0, bl: 0};
+    for (var side in defaultRadius) {
+      radius[side] = radius[side] || defaultRadius[side];
+    }
+  }
+
+  ctx.beginPath();
+  ctx.moveTo(x + radius.tl, y);
+  ctx.lineTo(x + width - radius.tr, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+  ctx.lineTo(x + width, y + height - radius.br);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+  ctx.lineTo(x + radius.bl, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+  ctx.lineTo(x, y + radius.tl);
+  ctx.quadraticCurveTo(x, y, x + radius.tl, y);
+  ctx.closePath();
+  if (fill) {
+    ctx.fill();
+  }
+  if (stroke) {
+    ctx.stroke();
+  }
+
+}
+
+const splashAudio = new Audio('app/assets/sounds/splash2.wav');
+/* harmony export (immutable) */ __webpack_exports__["d"] = splashAudio;
+
+splashAudio.volume = 0.15;
+const deathAudio = new Audio('app/assets/sounds/deathsound.wav');
+/* harmony export (immutable) */ __webpack_exports__["b"] = deathAudio;
+
+deathAudio.volume = 0.4;
+const completeAudio = new Audio('app/assets/sounds/levelcomplete2.wav');
+/* harmony export (immutable) */ __webpack_exports__["a"] = completeAudio;
+
+completeAudio.volume = .4;
+
+const game = () => {
+  const canvas = document.getElementById("canvas")
+  const ctx = canvas.getContext("2d")
+  const background = new Image();
+  background.src = "app/assets/images/clouds1.jpg";
+  background.onload = () => {
+    var ptrn = ctx.createPattern(background, 'repeat-x');
+    ctx.fillStyle = ptrn;
+  }
+  const clamp = (value, min, max) => {
+    if(value < min) return min;
+    else if(value > max) return max;
+    return value;
+  }
+  let vx = 0;
+
+  var motionTrailLength = 10;
+  var positions = [];
+
+  const storeLastPosition = (xPos, yPos) => {
+    positions.push({
+      xPos,
+      yPos
+    });
+
+    if (positions.length > motionTrailLength) {
+      positions.shift();
+    }
+  }
+  const platformColor = 'rgb(19, 44, 86)'
+
+  let levelCounter = 0;
+  let level = __WEBPACK_IMPORTED_MODULE_3__levelCreateUtil__["a" /* levels */][levelCounter];
+  let player = level.player;
+  let exit = level.exit;
+  let platformArray = level.platformArray;
+  let renderArray = level.renderArray;
+
+  const renderLevel = () => {
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.drawImage(background,vx,0);
+    ctx.drawImage(background, background.width-Math.abs(vx), 0);
+    if (Math.abs(vx) > background.width) {
+      vx = 0;
+    }
+    vx -= 0.1;
+    var camX = clamp(-player.xPos + canvas.width/2, 0, 2000 - canvas.width);
+    var camY = clamp(-player.yPos + canvas.height/2, 0, 2000 - canvas.height);
+
+    ctx.translate( camX, camY );
+    ctx.font="15px Press-Start-2P";
+    ctx.fillStyle = "black";
+
+    if (levelCounter === 0) {
+      ctx.fillText("Use the left and right arrow keys to move.",-140,400);
+      ctx.fillText("Press the up arrow key to jump", 170, 100);
+    }
+    if (levelCounter === 1) {
+      ctx.fillText("You're going to need help from your friend for this one.", -400, 100)
+      ctx.fillText("Try holding the 'Z' key while jumping.", 350, 400)
+    }
+
+    ctx.fillStyle = "rgba(0, 75, 150, 1)";
+    ctx.lineWidth = 2;
+    if (player.inWater) {
+      ctx.strokeStyle = `#${exit.color}`;
+    } else {
+      ctx.strokeStyle = 'white';
+    }
+    renderArray.forEach((platform) => {
+      roundRect(ctx, platform[0], platform[1], platform[2], platform[3], 10, platformColor, platform[4])
+    })
+    ctx.fillStyle = player.color;
+    ctx.fillRect(player.xPos, player.yPos, player.width, player.height);
+    ctx.fillStyle = `#${exit.color}`;
+    ctx.lineWidth=5;
+    ctx.strokeStyle = `#${exit.borderColor}`;
+    roundRect(ctx, exit.xPos, exit.yPos, exit.width, exit.height, 10, exit.color, exit.borderColor);
+  }
+
+  window.requestAnimFrame = (function(callback) {
+    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+    function(callback) {
+      window.setTimeout(callback, 1000/60);
+    };
+  })();
+
+  const yCollisionCheck = () => {
+    platformArray.some((platform) => {
+      if (player.xPos+player.width > platform.xPos && player.xPos < platform.xPos + platform.width){
+        if (player.yPos <= platform.yPos + platform.height && player.yPos > platform.yPos + (platform.height/2)) {
+          player.yPos = platform.yPos + platform.height;
+          player.ySpeed = 1;
+          return true;
+        }
+        if (player.yPos+player.height >= platform.yPos) {
+          if(player.yPos > platform.yPos+platform.height) {
+            player.isStopped = false;
+            return false;
+          } else {
+            player.isStopped = true;
+            player.yPos = platform.yPos - player.height;
+            player.ySpeed = 0;
+            return true;
+          }
+        }
+      } else {
+        player.isStopped = false;
+        return false;
+      }
+    })
+  }
+
+  const xCollisionCheck = () => {
+    platformArray.some((platform) => {
+      if (player.yPos+player.height > platform.yPos && player.yPos < platform.yPos + platform.height){
+        if(player.xPos + player.width + 3 >= platform.xPos && player.xPos < platform.xPos + platform.width){
+          player.rightBlocked = true;
+        }
+        if(player.xPos <= platform.xPos + platform.width + 3 && player.xPos + player.width > platform.xPos){
+          player.leftBlocked = true;
+        }
+      }
+    })
+  }
+
+  const divingCollisionCheck = () => {
+    platformArray.some((platform) => {
+      if (player.xPos + player.width >= platform.xPos && player.xPos <= platform.xPos + platform.width ) {
+        if (player.yPos+player.height >= platform.yPos && player.yPos < platform.yPos + platform.height) {
+          splashAudio.play();
+          player.inWater = true;
+          return true;
+        }
+        player.inWater = false;
+      }
+
+    })
+  }
+
+  const breachingCollisionCheck = () => {
+    platformArray.some((platform) => {
+      if (player.xPos + player.width >= platform.xPos && player.xPos <= platform.xPos + platform.width ) {
+        if (player.yPos + player.height >= platform.yPos && player.yPos < platform.yPos + platform.height) {
+          player.inWater = true;
+          return true;
+        }
+      }
+      player.inWater = false;
+    })
+  }
+
+  const checkFinishLevel = () => {
+    if (player.xPos + player.width > exit.xPos && player.xPos <= exit.xPos + exit.width ) {
+      if (player.yPos + player.height >= exit.yPos && player.yPos < exit.yPos + exit.height) {
+        completeAudio.play();
+        level = __WEBPACK_IMPORTED_MODULE_3__levelCreateUtil__["a" /* levels */][levelCounter += 1]
+        player = level.player;
+        exit = level.exit;
+        platformArray = level.platformArray;
+        renderArray = level.renderArray;
+        player.xSpeed = 0;
+        player.ySpeed = 0;
+      }
+    }
+  }
+
+  const update = () => {
+    storeLastPosition(player.xPos, player.yPos);
+    if (player.inWater){
+      player.update();
+      breachingCollisionCheck();
+    } else {
+      if(!player.isDiving){
+        xCollisionCheck();
+      }
+      player.update();
+      exit.update();
+      if (!player.isDiving) {
+        yCollisionCheck();
+      } else {
+        divingCollisionCheck();
+      }
+    }
+    checkBounds();
+    checkFinishLevel();
+    renderLevel();
+    requestAnimFrame(() => {
+      update();
+    })
+  }
+
+  const checkBounds = () => {
+    if (player.yPos > 1200) {
+      deathAudio.play();
+      player.xPos = level.playerRespawn[0];
+      player.yPos = 200;
+      player.ySpeed = 0;
+    }
+  }
+  update();
+}
+/* harmony export (immutable) */ __webpack_exports__["c"] = game;
+
+
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -636,11 +918,11 @@ if (true) {
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__levels__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__levels__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__player__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__platform__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__exit__ = __webpack_require__(2);
@@ -664,54 +946,120 @@ const levelOne = new __WEBPACK_IMPORTED_MODULE_0__levels__["a" /* default */](
     [150, 270, 150, 60, true],
     [0, 300, 150, 50, true],
   ],
-  new __WEBPACK_IMPORTED_MODULE_3__exit__["a" /* default */](815, 130)
+  new __WEBPACK_IMPORTED_MODULE_3__exit__["a" /* default */](815, 120)
 )
-/* harmony export (immutable) */ __webpack_exports__["a"] = levelOne;
-
 
 const levelTwo = new __WEBPACK_IMPORTED_MODULE_0__levels__["a" /* default */](
-  new __WEBPACK_IMPORTED_MODULE_1__player__["a" /* default */](50,  0), [
-    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](0, 300, 900, 200),
-    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](150, 270, 750, 200),
-    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](450, 190, 450, 200),
-    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](600, 160, 300, 200),
-    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](1000, 160, 300, 200)
+  new __WEBPACK_IMPORTED_MODULE_1__player__["a" /* default */](50, 200), [
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](695, 26, 200, 100),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](300, 215, 280, 80),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](450, 125, 450, 100),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](170, 260, 150, 60),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](0, 300, 150, 50)
   ],
   [
-    [0, 300, 900, 200, true],
-    [150, 270, 750, 200, true],
-    [450, 190, 450, 200, true],
-    [600, 160, 300, 200, true],
-    [1000, 160, 300, 200]
+    [695, 26, 200, 100, true],
+    [300, 215, 280, 80, true],
+    [450, 125, 450, 100, true],
+    [170, 260, 150, 60, true],
+    [0, 300, 150, 50, true]
   ],
-  new __WEBPACK_IMPORTED_MODULE_3__exit__["a" /* default */](815, 130)
+  new __WEBPACK_IMPORTED_MODULE_3__exit__["a" /* default */](815, 0)
 )
-/* harmony export (immutable) */ __webpack_exports__["c"] = levelTwo;
-
 
 const levelThree = new __WEBPACK_IMPORTED_MODULE_0__levels__["a" /* default */](
-  new __WEBPACK_IMPORTED_MODULE_1__player__["a" /* default */](50, 0), [
-    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](0, 300, 900, 200),
-    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](150, 270, 750, 200),
-    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](300, 230, 600, 200),
-    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](450, 190, 450, 200),
-    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](600, 160, 300, 200)
+  new __WEBPACK_IMPORTED_MODULE_1__player__["a" /* default */](50,  0), [
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](0, 300, 120, 100),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](150, 270, 120, 100),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](300, 230, 120, 100),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](500, 300, 120, 100),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](725, 500, 160, 100)
   ],
   [
-    [0, 300, 900, 200, true],
-    [150, 270, 750, 200, true],
-    [300, 230, 600, 200, true],
-    [450, 190, 450, 200, true],
-    [600, 160, 300, 200, true]
+    [0, 300, 120, 100, true],
+    [150, 270, 120, 100, true],
+    [300, 230, 120, 100, true],
+    [500, 300, 120, 100, true],
+    [725, 500, 160, 100, true]
   ],
-  new __WEBPACK_IMPORTED_MODULE_3__exit__["a" /* default */](815, 130)
+  new __WEBPACK_IMPORTED_MODULE_3__exit__["a" /* default */](793, 525)
 )
-/* harmony export (immutable) */ __webpack_exports__["b"] = levelThree;
+
+const levelFour = new __WEBPACK_IMPORTED_MODULE_0__levels__["a" /* default */](
+  new __WEBPACK_IMPORTED_MODULE_1__player__["a" /* default */](50, -2400), [
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](0, 300, 100, 100),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](185, 275, 100, 100),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](390, 230, 100, 250),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](600, 190, 100, 250),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](910, -1000, 50, 1500),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](840, 465, 100, 50),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](650, -1275, 80, 50)
+  ],
+  [
+    [0, 300, 100, 100, true],
+    [185, 275, 100, 100, true],
+    [390, 230, 100, 250, true],
+    [600, 190, 100, 250, true],
+    [910, -1000, 50, 1500, true],
+    [840, 465, 100, 50, true],
+    [650, -1275, 80, 50, true]
+  ],
+  new __WEBPACK_IMPORTED_MODULE_3__exit__["a" /* default */](600, -1325)
+)
+
+const levelFive = new __WEBPACK_IMPORTED_MODULE_0__levels__["a" /* default */](
+  new __WEBPACK_IMPORTED_MODULE_1__player__["a" /* default */](825, 0), [
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](725, 500, 150, 100),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](600, 460, 100, 100),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](500, 305, 120, 100),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](225, 230, 280, 30),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](250, 150, 236, 30),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](275, 70, 188, 30),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](300, -10, 140, 30),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](325, -90, 96, 30),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */]( 350, -170, 50, 30)
+  ],
+  [
+    [725, 500, 150, 100, true],
+    [600, 460, 100, 100, true],
+    [500, 305, 120, 100, true],
+    [225, 230, 280, 30, true],
+    [250, 150, 236, 30, true],
+    [275, 70, 188, 30, true],
+    [300, -10, 140, 30, true],
+    [325, -90, 96, 30, true],
+    [350, -170, 50, 30, true]
+  ],
+  new __WEBPACK_IMPORTED_MODULE_3__exit__["a" /* default */](365, -262)
+)
+
+const levelSix = new __WEBPACK_IMPORTED_MODULE_0__levels__["a" /* default */] (
+  new __WEBPACK_IMPORTED_MODULE_1__player__["a" /* default */](825, 0), [
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](725, 500, 150, 100),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](600, 460, 100, 100),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](-100, -100, 500, 400),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](400, 175, 175, 275),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](-50, 465, 275, 15),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](-275, 175, 175, 275)
+  ],
+  [
+    [725, 500, 150, 100, true],
+    [600, 460, 100, 100, true],
+    [-100, -100, 500, 400, true],
+    [400, 175, 175, 275, true],
+    [-50, 465, 325, 15, true],
+    [-275, 175, 175, 275, true]
+    ],
+  new __WEBPACK_IMPORTED_MODULE_3__exit__["a" /* default */](200, 400)
+)
+
+const levels = [levelOne, levelTwo, levelThree, levelFour, levelFive, levelSix]
+/* harmony export (immutable) */ __webpack_exports__["a"] = levels;
 
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -721,267 +1069,11 @@ class Level {
     this.platformArray = platformArray;
     this.renderArray = renderArray;
     this.exit = exit;
+    this.playerRespawn = [player.xPos, player.yPos]
   }
 }
 
 /* harmony default export */ __webpack_exports__["a"] = (Level);
-
-
-/***/ }),
-/* 7 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__player__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__platform__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__exit__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__levelCreateUtil__ = __webpack_require__(5);
-
-
-
-
-
-function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
-  if (typeof stroke == 'undefined') {
-    stroke = true;
-  }
-  if (typeof radius === 'undefined') {
-    radius = 5;
-  }
-  if (typeof radius === 'number') {
-    radius = {tl: radius, tr: radius, br: radius, bl: radius};
-  } else {
-    var defaultRadius = {tl: 0, tr: 0, br: 0, bl: 0};
-    for (var side in defaultRadius) {
-      radius[side] = radius[side] || defaultRadius[side];
-    }
-  }
-
-  ctx.beginPath();
-  ctx.moveTo(x + radius.tl, y);
-  ctx.lineTo(x + width - radius.tr, y);
-  ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
-  ctx.lineTo(x + width, y + height - radius.br);
-  ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
-  ctx.lineTo(x + radius.bl, y + height);
-  ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
-  ctx.lineTo(x, y + radius.tl);
-  ctx.quadraticCurveTo(x, y, x + radius.tl, y);
-  ctx.closePath();
-  if (fill) {
-    ctx.fill();
-  }
-  if (stroke) {
-    ctx.stroke();
-  }
-
-}
-
-const splashAudio = new Audio('/home/sean/Desktop/hawk_and_minnow/app/assets/sounds/splash2.wav');
-/* harmony export (immutable) */ __webpack_exports__["d"] = splashAudio;
-
-splashAudio.volume = 0.15;
-const deathAudio = new Audio('/home/sean/Desktop/hawk_and_minnow/app/assets/sounds/deathsound.wav');
-/* harmony export (immutable) */ __webpack_exports__["b"] = deathAudio;
-
-deathAudio.volume = 0.4;
-const completeAudio = new Audio('/home/sean/Desktop/hawk_and_minnow/app/assets/sounds/levelcomplete2.wav');
-/* harmony export (immutable) */ __webpack_exports__["a"] = completeAudio;
-
-completeAudio.volume = .4;
-
-const game = () => {
-  const canvas = document.getElementById("canvas")
-  const ctx = canvas.getContext("2d")
-  const background = new Image();
-  background.src = "/home/sean/Desktop/hawk_and_minnow/app/assets/images/clouds.jpg";
-  background.onload = () => {
-    var ptrn = ctx.createPattern(background, 'repeat-x');
-    ctx.fillStyle = ptrn;
-  }
-  const clamp = (value, min, max) => {
-    if(value < min) return min;
-    else if(value > max) return max;
-    return value;
-  }
-  let vx = 0;
-
-  var motionTrailLength = 10;
-  var positions = [];
-
-  const storeLastPosition = (xPos, yPos) => {
-    positions.push({
-      xPos,
-      yPos
-    });
-
-    if (positions.length > motionTrailLength) {
-      positions.shift();
-    }
-  }
-  const platformColor = 'rgb(19, 44, 86)'
-
-  const levels = [__WEBPACK_IMPORTED_MODULE_3__levelCreateUtil__["a" /* levelOne */], __WEBPACK_IMPORTED_MODULE_3__levelCreateUtil__["c" /* levelTwo */], __WEBPACK_IMPORTED_MODULE_3__levelCreateUtil__["b" /* levelThree */]]
-  let levelCounter = 0;
-  let level = levels[levelCounter];
-  let player = level.player;
-  let exit = level.exit;
-  let platformArray = level.platformArray;
-  let renderArray = level.renderArray;
-
-  const renderLevel = () => {
-    ctx.setTransform(1,0,0,1,0,0);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    ctx.drawImage(background,vx,0);
-    ctx.drawImage(background, background.width-Math.abs(vx), 0);
-    if (Math.abs(vx) > background.width) {
-      vx = 0;
-    }
-    vx -= 0.1;
-    var camX = clamp(-player.xPos + canvas.width/2, 0, 2000 - canvas.width);
-    var camY = clamp(-player.yPos + canvas.height/2, 0, 2000 - canvas.height);
-
-    ctx.translate( camX, camY );
-
-    ctx.fillStyle = "rgba(0, 75, 150, 1)";
-    ctx.lineWidth = 2;
-    renderArray.forEach((platform) => {
-      roundRect(ctx, platform[0], platform[1], platform[2], platform[3], 10, platformColor, platform[4])
-    })
-    ctx.fillStyle = player.color;
-    ctx.fillRect(player.xPos, player.yPos, player.width, player.height);
-    ctx.fillStyle = `#${exit.color}`;
-    ctx.fillRect(exit.xPos, exit.yPos, exit.width, exit.height);
-    ctx.strokeStyle = `#${exit.borderColor}`;
-    ctx.lineWidth=5;
-    ctx.strokeRect(exit.xPos, exit.yPos, exit.width, exit.height);
-  }
-
-  window.requestAnimFrame = (function(callback) {
-    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
-    function(callback) {
-      window.setTimeout(callback, 1000/60);
-    };
-  })();
-
-  const yCollisionCheck = () => {
-    platformArray.some((platform) => {
-      if (player.xPos+player.width > platform.xPos && player.xPos < platform.xPos + platform.width){
-        if (player.yPos <= platform.yPos + platform.height && player.yPos > platform.yPos + (platform.height/2)) {
-          player.yPos = platform.yPos + platform.height;
-          player.ySpeed = 1;
-          return true;
-        }
-        if (player.yPos+player.height >= platform.yPos) {
-          if(player.yPos > platform.yPos+platform.height) {
-            player.isStopped = false;
-            return false;
-          } else {
-            player.isStopped = true;
-            player.yPos = platform.yPos - player.height;
-            player.ySpeed = 0;
-            return true;
-          }
-        }
-      } else {
-        player.isStopped = false;
-        return false;
-      }
-    })
-  }
-
-  const xCollisionCheck = () => {
-    platformArray.some((platform) => {
-      if (player.yPos+player.height > platform.yPos && player.yPos < platform.yPos + platform.height){
-        if(player.xPos + player.width + 3 >= platform.xPos && player.xPos < platform.xPos + platform.width){
-          player.rightBlocked = true;
-        }
-        if(player.xPos <= platform.xPos + platform.width + 3 && player.xPos + player.width > platform.xPos){
-          player.leftBlocked = true;
-        }
-      }
-    })
-  }
-
-  const divingCollisionCheck = () => {
-    platformArray.some((platform) => {
-      if (player.xPos + player.width >= platform.xPos && player.xPos <= platform.xPos + platform.width ) {
-        if (player.yPos+player.height >= platform.yPos && player.yPos < platform.yPos + platform.height) {
-          splashAudio.play();
-          player.inWater = true;
-          return true;
-        }
-        player.inWater = false;
-      }
-
-    })
-  }
-
-  const breachingCollisionCheck = () => {
-    platformArray.some((platform) => {
-      if (player.xPos + player.width >= platform.xPos && player.xPos <= platform.xPos + platform.width ) {
-        if (player.yPos + player.height >= platform.yPos && player.yPos < platform.yPos + platform.height) {
-          player.inWater = true;
-          return true;
-        }
-      }
-      player.inWater = false;
-    })
-  }
-
-  const checkFinishLevel = () => {
-    if (player.xPos + player.width > exit.xPos && player.xPos <= exit.xPos + exit.width ) {
-      if (player.yPos + player.height >= exit.yPos && player.yPos < exit.yPos + exit.height) {
-        completeAudio.play();
-        level = levels[levelCounter += 1]
-        player = level.player;
-        exit = level.exit;
-        platformArray = level.platformArray;
-        renderArray = level.renderArray;
-        player.xSpeed = 0;
-        player.ySpeed = 0;
-      }
-    }
-  }
-
-  const update = () => {
-    storeLastPosition(player.xPos, player.yPos);
-    if (player.inWater){
-      player.update();
-      breachingCollisionCheck();
-    } else {
-      if(!player.isDiving){
-        xCollisionCheck();
-      }
-      player.update();
-      exit.update();
-      if (!player.isDiving) {
-        yCollisionCheck();
-      } else {
-        divingCollisionCheck();
-      }
-    }
-    checkBounds();
-    checkFinishLevel();
-    renderLevel();
-    requestAnimFrame(() => {
-      update();
-    })
-  }
-
-  const checkBounds = () => {
-    if (player.yPos > 1200) {
-      deathAudio.play();
-      player.xPos = 50;
-      player.yPos = 200;
-      player.ySpeed = 0;
-    }
-  }
-  update();
-}
-/* harmony export (immutable) */ __webpack_exports__["c"] = game;
-
 
 
 /***/ })

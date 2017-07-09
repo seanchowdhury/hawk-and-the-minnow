@@ -2,7 +2,8 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" type="text/css" href="/home/sean/Desktop/hawk_and_minnow/app/assets/stylesheets/main.css" />
+    <link rel="stylesheet" type="text/css" href="app/assets/stylesheets/main.css" />
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
     <title>hawk and minnow</title>
   </head>
   <body>
@@ -12,9 +13,11 @@
       }
     </style>
     <script type="text/javascript" src="app/assets/javascripts/bundle.js"></script>
-    <canvas id='canvas' height=600 width='1200'></canvas>
-    <button id='mute'>mute</button>
-    <button id='start'>start</button>
-    <img src='app/assets/images/titlecard.png' id='title'/>
+    <div id='game-contents'>
+      <canvas id='canvas' height=600 width='1200'></canvas>
+      <img id='mute' src='app/assets/images/Icons8-Windows-8-Media-Controls-Volume-Up.ico' />
+      <button id='start'>Press Enter</button>
+      <img src='app/assets/images/titlecard.png' id='title'/>
+    </div>
   </body>
 </html>

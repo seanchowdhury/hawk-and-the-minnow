@@ -1,3 +1,8 @@
+#game-contents {
+  display: flex;
+  position: relative;
+}
+
 #title {
   position: absolute;
   left: 375px;
@@ -7,14 +12,38 @@
 
 #start {
   position: absolute;
-  left: 500px;
-  top: 300px;
+  margin: 450px calc(50% - 35px);
   z-index: 1;
-}
-body {
-  display: flex;
+  border-style: solid;
+  border-color: black;
+  background: none;
+  font-family: 'Press Start 2P', cursive;
+  padding: 10px 30px;
+  color: black;
+  font-size: 20px;
+  text-shadow: 1px 1px white;
 }
 
-/*#canvas {
-  margin: 0 auto;
-}*/
+#start button {
+  background-color: none;
+
+}
+
+#mute {
+  position: absolute;
+  height: 20px;
+  width: auto;
+  margin: 170px 82%;
+}
+
+#canvas {
+  margin: 150px auto;
+}
+
+@font-face {
+  font-family: 'Press-Start-2P';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Press Start 2P Regular'), local('PressStart2P-Regular'), url(https://fonts.gstatic.com/s/pressstart2p/v5/8Lg6LX8-ntOHUQnvQ0E7o08SWvhA5BcWCS8xVZDIH7E.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
+}

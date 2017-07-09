@@ -1,6 +1,6 @@
 import { game, splashAudio, completeAudio, deathAudio } from './lib/game';
 
-const thanksWill = new Audio('/home/sean/Desktop/hawk_and_minnow/app/assets/sounds/seansong.mp3');
+const thanksWill = new Audio('app/assets/sounds/seansong.mp3');
 thanksWill.volume = .5;
 if (typeof thanksWill.loop == 'boolean')
 {
@@ -15,7 +15,7 @@ else
 }
 
 const background = new Image();
-background.src = "/home/sean/Desktop/hawk_and_minnow/app/assets/images/clouds.jpg";
+background.src = "app/assets/images/clouds1.jpg";
 
 document.addEventListener("DOMContentLoaded", () => {
   const canvas = document.getElementById("canvas")
@@ -29,26 +29,31 @@ document.addEventListener("DOMContentLoaded", () => {
         deathAudio.muted = false;
         completeAudio.muted = false;
         thanksWill.muted = false;
-        e.target.innerHTML = 'mute'
+        e.target.src = "app/assets/images/Icons8-Windows-8-Media-Controls-Volume-Up.ico"
       }
       else {
         splashAudio.muted = true;
         deathAudio.muted = true;
         completeAudio.muted = true;
         thanksWill.muted = true;
-        e.target.innerHTML = 'unmute'
+        e.target.src = "app/assets/images/Icons8-Windows-8-Media-Controls-Mute.ico"
       }
   })
 
-  const startGame = document.getElementById('start')
-  startGame.addEventListener('click', (e) => {
-    game();
-    thanksWill.play();
-    startGame.style.display = 'none';
-    const titleCard = document.getElementById('title');
-    titleCard.style.opacity = '1';
-    fade(titleCard);
-  })
+
+  const startGame = (e) => {
+    if (e.keyCode === 13) {
+      document.removeEventListener('keydown', startGame);
+      game();
+      thanksWill.play();
+      document.getElementById('start').style.display = 'none';
+      const titleCard = document.getElementById('title');
+      titleCard.style.opacity = '1';
+      fade(titleCard);
+    }
+  }
+
+  document.addEventListener('keydown', startGame)
 })
 
 const fade = (el) => {
@@ -66,3 +71,9 @@ const fade = (el) => {
         op -= op * fader;
     }, 50);
 }
+
+window.addEventListener("keydown", function(e) {
+if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+    e.preventDefault();
+}
+}, false);
