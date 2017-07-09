@@ -325,6 +325,19 @@ const fade = (el) => {
     }, 50);
 }
 
+function unfade(element) {
+    var op = 0.1;  // initial opacity
+    element.style.display = 'block';
+    var timer = setInterval(function () {
+        if (op >= 1){
+            clearInterval(timer);
+        }
+        element.style.opacity = op;
+        element.style.filter = 'alpha(opacity=' + op * 100 + ")";
+        op += op * 0.1;
+    }, 10);
+}
+
 window.addEventListener("keydown", function(e) {
 if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
     e.preventDefault();
@@ -426,7 +439,7 @@ const game = () => {
   }
   const platformColor = 'rgb(19, 44, 86)'
 
-  let levelCounter = 1;
+  let levelCounter = 0;
   let level = __WEBPACK_IMPORTED_MODULE_3__levelCreateUtil__["a" /* levels */][levelCounter];
   let player = level.player;
   let exit = level.exit;
@@ -437,7 +450,6 @@ const game = () => {
   const renderLevel = () => {
     ctx.setTransform(1,0,0,1,0,0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    console.log(showHelp)
     ctx.drawImage(background,vx,0);
     ctx.drawImage(background, background.width-Math.abs(vx), 0);
     if (Math.abs(vx) > background.width) {
@@ -453,7 +465,7 @@ const game = () => {
 
     if (levelCounter === 0) {
       ctx.fillText("Use the left and right arrow keys to move.",-140,400);
-      ctx.fillText("Press the up arrow key to jump", 170, 100);
+      ctx.fillText("Press the up arrow key to jump.", 170, 100);
     }
     if (levelCounter === 1) {
       ctx.fillText("You can leap over the highest obstacles! I believe in you!", -400, 100)
@@ -463,7 +475,7 @@ const game = () => {
         }, 3000)
       }
       if (showHelp === true) {
-        ctx.fillText("Sorry you were tricked", 325, 375)
+        ctx.fillText("Sorry you were tricked...", 325, 375)
         ctx.fillText("Try holding the 'Z' key while in air/jumping,", 325, 400)
         ctx.fillText("and dive into the water!", 325, 425)
       }
@@ -570,6 +582,9 @@ const game = () => {
         player.xSpeed = 0;
         player.ySpeed = 0;
         showHelp = false;
+        if (levelCounter === 1) {
+          document.getElementById('subtitle').style.display = 'block';
+        }
       }
     }
   }

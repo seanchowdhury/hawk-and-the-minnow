@@ -1,6 +1,13 @@
+body {
+  background-color: #E8E9F3;
+  display: flex;
+  flex-direction: column;
+}
+
 #game-contents {
   display: flex;
   position: relative;
+  flex-direction: column;
 }
 
 #title {
@@ -10,9 +17,18 @@
   opacity: 0;
 }
 
+#subtitle {
+  position: absolute;
+  top: 0;
+  left: calc(50% - 171.5px);
+  height: 100px;
+  width: auto;
+  display: none;
+}
+
 #start {
   position: absolute;
-  margin: 450px calc(50% - 35px);
+  margin: 400px calc(50% - 76px);
   z-index: 1;
   border-style: solid;
   border-color: black;
@@ -33,11 +49,27 @@
   position: absolute;
   height: 20px;
   width: auto;
-  margin: 170px 82%;
+  margin: 140px 82%;
 }
 
 #canvas {
-  margin: 150px auto;
+  margin: 120px auto;
+}
+
+#links {
+  z-index: 1;
+  margin: -85px auto 0 auto;
+  display: flex;
+}
+
+#links img {
+  height: 30px;
+  width: auto;
+}
+
+#links img:hover {
+  height: 32px;
+  width: auto;
 }
 
 @font-face {
