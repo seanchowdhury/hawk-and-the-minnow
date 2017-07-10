@@ -83,7 +83,7 @@ class Player {
     this.isDiving = false;
     this.inWater = false;
     this.color = "rgb(255, 106, 7)";
-    this.trailColor = 'rgba(0, 0, 0';
+    this.tailColor = "rgb(209, 255, 94)";
     this.maxMoveSpeed = 5;
     this.moveSpeed = 0.8;
     this.xSpeed = 0;
@@ -101,12 +101,12 @@ class Player {
   update() {
     if (this.inWater) {
       this.color = "rgb(209, 255, 94)";
-      this.trailColor = 'rgba(255, 106, 7';
+      this.tailColor = "rgb(255, 106, 7)";
       this._float();
     } else if (!this.isStopped) {
       this._fall();
       this.color = "rgb(255, 106, 7)";
-      this.trailColor = 'rgba(0, 0, 0';
+      this.tailColor = "rgb(209, 255, 94)";
     }
 
 
@@ -370,7 +370,7 @@ if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
 
 
 
-function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+const roundRect = (ctx, x, y, width, height, radius, fill, stroke) => {
   if (typeof stroke == 'undefined') {
     stroke = true;
   }
@@ -418,50 +418,51 @@ const completeAudio = new Audio('app/assets/sounds/levelcomplete2.wav');
 /* harmony export (immutable) */ __webpack_exports__["a"] = completeAudio;
 
 completeAudio.volume = .4;
+const background = new Image();
+background.src = "app/assets/images/clouds1.jpg";
+
+const clamp = (value, min, max) => {
+  if(value < min) return min;
+  else if(value > max) return max;
+  return value;
+}
+
+let vx = 0;
+const platformColor = 'rgb(19, 44, 86)'
+let levelCounter = 6;
+let level = __WEBPACK_IMPORTED_MODULE_3__levelCreateUtil__["a" /* levels */][levelCounter];
+let player = level.player;
+let exit = level.exit;
+let platformArray = level.platformArray;
+let renderArray = level.renderArray;
+let showHelp = [false, false, false, false, false, false, false, false];
 
 const game = () => {
   const canvas = document.getElementById("canvas")
   const ctx = canvas.getContext("2d")
-  const background = new Image();
-  background.src = "app/assets/images/clouds1.jpg";
   background.onload = () => {
     var ptrn = ctx.createPattern(background, 'repeat-x');
     ctx.fillStyle = ptrn;
   }
-  const clamp = (value, min, max) => {
-    if(value < min) return min;
-    else if(value > max) return max;
-    return value;
-  }
-  let vx = 0;
-
-  const platformColor = 'rgb(19, 44, 86)'
-
-  let levelCounter = 0;
-  let level = __WEBPACK_IMPORTED_MODULE_3__levelCreateUtil__["a" /* levels */][levelCounter];
-  let player = level.player;
-  let exit = level.exit;
-  let platformArray = level.platformArray;
-  let renderArray = level.renderArray;
-  let showHelp = [false, false, false, false, false, false, false, false];
-
   const renderLevel = () => {
     ctx.setTransform(1,0,0,1,0,0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    //draw background
     ctx.drawImage(background,vx,0);
     ctx.drawImage(background, background.width-Math.abs(vx), 0);
+    //control camera
     if (Math.abs(vx) > background.width) {
       vx = 0;
     }
     vx -= 0.1;
     var camX = clamp(-player.xPos + canvas.width/2, 0, 2000 - canvas.width);
     var camY = clamp(-player.yPos + canvas.height/2, 0, 2000 - canvas.height);
-
+    //draw text
     ctx.translate( camX, camY );
     ctx.font="15px Press-Start-2P";
     ctx.fillStyle = "black";
-
     renderText();
+    //draw platforms
     ctx.fillStyle = "rgba(0, 75, 150, .8)";
     ctx.lineWidth = 2;
     if (player.inWater) {
@@ -472,8 +473,10 @@ const game = () => {
     renderArray.forEach((platform) => {
       roundRect(ctx, platform[0], platform[1], platform[2], platform[3], 10, platformColor, platform[4])
     })
+    //draw player
     ctx.fillStyle = player.color;
-    ctx.fillRect(player.xPos, player.yPos, player.width, player.height);
+    ctx.fillRect(player.xPos, player.yPos, player.width, player.height)
+    //draw exit
     ctx.fillStyle = `${exit.color}`;
     ctx.lineWidth=5;
     ctx.strokeStyle = `${exit.borderColor}`;
@@ -563,7 +566,7 @@ const game = () => {
           case 1:
             document.getElementById('subtitle').style.display = 'block';
             break;
-          case 6:
+          case 7:
             window.setTimeout( () => {
               const congrats = new Audio('app/assets/sounds/congrats.mp3');
               congrats.volume = 0.4;
@@ -630,7 +633,7 @@ const game = () => {
           ctx.fillText("I mean that's one way", 0, 275)
         }
         break;
-      case 6:
+      case 7:
         ctx.fillText("Congrats! Those were all the levels I've made so far.", -470, 150);
         ctx.fillText("Here are some random platforms to mess around with.", -470, 175);
         ctx.fillText("If you want an even better version of this game", -470, 200)
@@ -2338,6 +2341,28 @@ const levelSix = new __WEBPACK_IMPORTED_MODULE_0__levels__["a" /* default */] (
   new __WEBPACK_IMPORTED_MODULE_3__exit__["a" /* default */](200, 400)
 )
 
+const levelSeven = new __WEBPACK_IMPORTED_MODULE_0__levels__["a" /* default */] (
+  new __WEBPACK_IMPORTED_MODULE_1__player__["a" /* default */](495, -900), [
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](450, 590, 100, 10),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](370, 275, 50, 275),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](650, 50, 50, 350),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](370, -300, 50, 280),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](650, -600, 50, 320),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](370, -900, 50, 280),
+    new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](455, -950, 100, 20),
+  ],
+  [
+    [450, 590, 100, 10, true],
+    [370, 275, 50, 275, true],
+    [650, 50, 50, 350, true],
+    [370, -300, 50, 280, true],
+    [650, -600, 50, 280, true],
+    [370, -900, 50, 280, true],
+    [455, -950, 100, 20, true]
+  ],
+  new __WEBPACK_IMPORTED_MODULE_3__exit__["a" /* default */](495, -1000)
+)
+
 const finalLevel = new __WEBPACK_IMPORTED_MODULE_0__levels__["a" /* default */] (
   new __WEBPACK_IMPORTED_MODULE_1__player__["a" /* default */](50, 200), [
     new __WEBPACK_IMPORTED_MODULE_2__platform__["a" /* default */](725, 500, 150, 100),
@@ -2363,7 +2388,7 @@ const finalLevel = new __WEBPACK_IMPORTED_MODULE_0__levels__["a" /* default */] 
   ],
   new __WEBPACK_IMPORTED_MODULE_3__exit__["a" /* default */](-4000, -3000)
 )
-const levels = [levelOne, levelTwo, levelThree, levelFour, levelFive, levelSix, finalLevel]
+const levels = [levelOne, levelTwo, levelThree, levelFour, levelFive, levelSix, levelSeven, finalLevel]
 /* harmony export (immutable) */ __webpack_exports__["a"] = levels;
 
 
