@@ -437,7 +437,7 @@ const game = () => {
 
   const platformColor = 'rgb(19, 44, 86)'
 
-  let levelCounter = 5;
+  let levelCounter = 0;
   let level = __WEBPACK_IMPORTED_MODULE_3__levelCreateUtil__["a" /* levels */][levelCounter];
   let player = level.player;
   let exit = level.exit;
