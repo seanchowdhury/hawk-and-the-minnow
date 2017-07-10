@@ -349,19 +349,6 @@ const fade = (el) => {
     }, 50);
 }
 
-function unfade(element) {
-    var op = 0.1;  // initial opacity
-    element.style.display = 'block';
-    var timer = setInterval(function () {
-        if (op >= 1){
-            clearInterval(timer);
-        }
-        element.style.opacity = op;
-        element.style.filter = 'alpha(opacity=' + op * 100 + ")";
-        op += op * 0.1;
-    }, 10);
-}
-
 window.addEventListener("keydown", function(e) {
 if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
     e.preventDefault();
@@ -450,7 +437,7 @@ const game = () => {
 
   const platformColor = 'rgb(19, 44, 86)'
 
-  let levelCounter = 0;
+  let levelCounter = 5;
   let level = __WEBPACK_IMPORTED_MODULE_3__levelCreateUtil__["a" /* levels */][levelCounter];
   let player = level.player;
   let exit = level.exit;
@@ -487,7 +474,6 @@ const game = () => {
     })
     ctx.fillStyle = player.color;
     ctx.fillRect(player.xPos, player.yPos, player.width, player.height);
-    debugger
     ctx.fillStyle = `${exit.color}`;
     ctx.lineWidth=5;
     ctx.strokeStyle = `${exit.borderColor}`;
@@ -504,25 +490,19 @@ const game = () => {
   const yCollisionCheck = () => {
     platformArray.some((platform) => {
       if (player.xPos+player.width > platform.xPos && player.xPos < platform.xPos + platform.width){
-        if (player.yPos <= platform.yPos + platform.height && player.yPos > platform.yPos + (platform.height/2)) {
+        if (player.yPos + player.height >= platform.yPos && player.yPos < platform.yPos + player.height) {
+          player.yPos = platform.yPos - player.height;
+          player.isStopped = true;
+          player.ySpeed = 0;
+          return true;
+        } else if (player.yPos <= platform.yPos + platform.height && player.yPos > platform.yPos) {
           player.yPos = platform.yPos + platform.height;
-          player.ySpeed = 1;
+          player.ySpeed = 0.5;
           return true;
         }
-        if (player.yPos+player.height >= platform.yPos) {
-          if(player.yPos > platform.yPos+platform.height) {
-            player.isStopped = false;
-            return false;
-          } else {
-            player.isStopped = true;
-            player.yPos = platform.yPos - player.height;
-            player.ySpeed = 0;
-            return true;
-          }
-        }
+        player.isStopped = false;
       } else {
         player.isStopped = false;
-        return false;
       }
     })
   }
@@ -588,7 +568,7 @@ const game = () => {
               const congrats = new Audio('app/assets/sounds/congrats.mp3');
               congrats.volume = 0.4;
               congrats.play();
-            }, 3000)
+            }, 2000)
         default:
             break;
         }
@@ -641,16 +621,26 @@ const game = () => {
           ctx.fillText('You got this!', 970, 450)
         }
         break;
+      case 5:
+        if (player.xPos >= 210 && player.xPos <= 230 && player.yPos >= 270 && player.yPos <= 300) {
+          showHelp[5] = true;
+        }
+        if (showHelp[5] === true) {
+          ctx.fillText("Brute force huh?", 30, 250)
+          ctx.fillText("I mean that's one way", 0, 275)
+        }
+        break;
       case 6:
         ctx.fillText("Congrats! Those were all the levels I've made so far.", -470, 150);
         ctx.fillText("Here are some random platforms to mess around with.", -470, 175);
         ctx.fillText("If you want an even better version of this game", -470, 200)
         ctx.fillText("go checkout and support Daniel Linssen at:", -470, 225);
         ctx.fillText("managore.itch.io/sunandmoon", -470, 250);
-        ctx.fillText("Shoutouts to Will P.God Johnson for the music", -470, 275);
-        ctx.fillText("and all the wonderful people who upload", -470, 300);
-        ctx.fillText("free art assets to the internet <3", -470, 325);
-        ctx.fillText("Thanks so much for playing!", -470, 350);
+        ctx.fillText("Shoutouts to Will aka 'Yung Also Watches",-470, 275);
+        ctx.fillText("Desus and Mero' Johnson for the music", -470, 300);
+        ctx.fillText("and all the wonderful people who upload", -470, 325);
+        ctx.fillText("free art assets to the internet <3", -470, 350);
+        ctx.fillText("Thanks so much for playing!", -470, 375);
       default:
         break;
     }
