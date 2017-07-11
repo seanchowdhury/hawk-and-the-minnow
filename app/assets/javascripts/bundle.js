@@ -429,7 +429,7 @@ const clamp = (value, min, max) => {
 
 let vx = 0;
 const platformColor = 'rgb(19, 44, 86)'
-let levelCounter = 6;
+let levelCounter = 0;
 let level = __WEBPACK_IMPORTED_MODULE_3__levelCreateUtil__["a" /* levels */][levelCounter];
 let player = level.player;
 let exit = level.exit;
