@@ -1,6 +1,6 @@
 # Hawk and the Minnow
 
-Hawk and the Minnow is a puzzle platformer built with JavaScript, Canvas, and love.
+Hawk and the Minnow is a puzzle platformer built with JavaScript and Canvas.
 
 [Play it here!](https://seanchowdhury.github.io)
 
