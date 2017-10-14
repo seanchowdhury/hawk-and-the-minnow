@@ -4,7 +4,7 @@ Hawk and the Minnow is a puzzle platformer built with JavaScript, Canvas, and lo
 
 [Play it here!](https://seanchowdhury.github.io)
 
-![hey](https://raw.githubusercontent.com/seanchowdhury/hawk-and-the-minnow/master/app/assests/images.productionpicpng)
+![hey](https://raw.githubusercontent.com/seanchowdhury/hawk-and-the-minnow/master/app/assests/images.productionpic.png)
 
 ### Architecture and Technologies
 
@@ -12,7 +12,7 @@ The game is built with the  following technologies:
 
 - `JavaScript` for building the game's movement and platform logic,
 - `Canvas` for rendering of the actual game map,
-- `HTML DOM/CSS` for styling tweaks.
+- `HTML DOM/CSS5` for styling tweaks
 
 The game uses object oriented principles to do the heavy lifting and is broken into a few major scripts:
 
